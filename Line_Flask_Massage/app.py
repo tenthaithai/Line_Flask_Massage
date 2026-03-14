@@ -6,8 +6,13 @@ import os
 app = Flask(__name__)
 
 # ตั้งค่า Token และ Secret ของ LINE
-CHANNEL_ACCESS_TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN", "edF0a5LKdkP7jHEXvKXIpgohbfNjk8djOYkIYLxPef+jhnVOpZafC7xhds/M+iQIadpOYZbla8EscJ7FYxzQ6RwEe0yCbTQrO/A3qo08b1cG8pkTxcLjFoGI2aiiXBIO9cfj3RVHZumjKypjhlHYHgdB04t89/1O/w1cDnyilFU=")
-CHANNEL_SECRET = os.environ.get("LINE_CHANNEL_SECRET", "142b833b66b98f24e01e7d1ca0b470f3")
+CHANNEL_ACCESS_TOKEN = os.environ.get(
+    "LINE_CHANNEL_ACCESS_TOKEN",
+    "edF0a5LKdkP7jHEXvKXIpgohbfNjk8djOYkIYLxPef+jhnVOpZafC7xhds/M+iQIadpOYZbla8EscJ7FYxzQ6RwEe0yCbTQrO/A3qo08b1cG8pkTxcLjFoGI2aiiXBIO9cfj3RVHZumjKypjhlHYHgdB04t89/1O/w1cDnyilFU=",
+)
+CHANNEL_SECRET = os.environ.get(
+    "LINE_CHANNEL_SECRET", "142b833b66b98f24e01e7d1ca0b470f3"
+)
 
 # รายการเมนูอาหาร
 รายการอาหาร = [
@@ -15,36 +20,36 @@ CHANNEL_SECRET = os.environ.get("LINE_CHANNEL_SECRET", "142b833b66b98f24e01e7d1c
         "ชื่อ": "ข้าวมันไก่",
         "โปรโมชัน": "ข้าวมันไก่ต้มนุ่ม หอมข้าวมันหอม พร้อมน้ำจิ้มสูตรเด็ด",
         "รูป": "https://static.thairath.co.th/media/dFQROr7oWzulq5Fa6rpOetuLxWtDW4pGVxTIT2bhWuo8KUmcxGVIisEysxd9YsSVQ0b.webp",
-        "ราคา": "55"
+        "ราคา": "55",
     },
     {
         "ชื่อ": "ผัดกะเพราหมูสับ",
         "โปรโมชัน": "ผัดกะเพราหมูสับกรอบ เผ็ดแซ่บ ใส่ไข่ดาว",
         "รูป": "https://cdn-ildplgb.nitrocdn.com/IsDIEVbKqjLKLwSjgUBetWWfJLAUdaLp/assets/images/optimized/rev-95ef742/www.thammculture.com/wp-content/uploads/2024/01/Untitled-612.jpg",
-        "ราคา": "60"
+        "ราคา": "60",
     },
     {
         "ชื่อ": "ส้มตำไทย",
         "โปรโมชัน": "ส้มตำไทยสูตรต้นตำรับ เปรี้ยวหวานเผ็ด ถูกปาก",
         "รูป": "https://cdn.hellokhunmor.com/wp-content/uploads/2019/10/107.-Thai-papaya-salad.jpg?w=750&q=100",
-        "ราคา": "50"
+        "ราคา": "50",
     },
     {
         "ชื่อ": "ต้มยำกุ้ง",
         "โปรโมชัน": "ต้มยำกุ้งน้ำข้นรสเข้มข้น กุ้งสดตัวใหญ่ อร่อยมาก",
         "รูป": "https://www.creativeecon.asia/wp-content/uploads/2024/12/unnamed-1-696x389.jpg",
-        "ราคา": "120"
+        "ราคา": "120",
     },
     {
         "ชื่อ": "ข้าวผัดปู",
         "โปรโมชัน": "ข้าวผัดปูเนื้อปูแน่น หอมกลิ่นไข่ รสชาติกลมกล่อม",
         "รูป": "https://cdn.prod.website-files.com/629732c7c0e1401011449adc/6350f5166cfda1f319196a94_CrabFriedRice%402x-p-1600.webp",
-        "ราคา": "100"
+        "ราคา": "100",
     },
 ]
 
 # คีย์เวิร์ดที่รองรับ
-คีย์เวิร์ดอาหาร = ["แนะนำร้านอาหาร", "กินอะไรดี", "หิวข้าว"]
+คีย์เวิร์ดอาหาร = ["แนะนำร้เมนูอาหาร", "กินอะไรดี", "หิวข้าว"]
 
 
 # สร้าง Flex Message
@@ -59,7 +64,7 @@ def สร้างFlexMessage(อาหาร):
                 "url": อาหาร["รูป"],
                 "size": "full",
                 "aspectRatio": "20:13",
-                "aspectMode": "cover"
+                "aspectMode": "cover",
             },
             "body": {
                 "type": "box",
@@ -71,19 +76,16 @@ def สร้างFlexMessage(อาหาร):
                         "text": อาหาร["ชื่อ"],
                         "size": "xl",
                         "weight": "bold",
-                        "color": "#222222"
+                        "color": "#222222",
                     },
                     {
                         "type": "text",
                         "text": อาหาร["โปรโมชัน"],
                         "size": "sm",
                         "color": "#666666",
-                        "wrap": True
+                        "wrap": True,
                     },
-                    {
-                        "type": "separator",
-                        "margin": "md"
-                    },
+                    {"type": "separator", "margin": "md"},
                     {
                         "type": "box",
                         "layout": "baseline",
@@ -94,7 +96,7 @@ def สร้างFlexMessage(อาหาร):
                                 "text": "ราคา",
                                 "size": "sm",
                                 "color": "#999999",
-                                "flex": 1
+                                "flex": 1,
                             },
                             {
                                 "type": "text",
@@ -102,11 +104,11 @@ def สร้างFlexMessage(อาหาร):
                                 "size": "lg",
                                 "weight": "bold",
                                 "color": "#E53E3E",
-                                "flex": 2
-                            }
-                        ]
-                    }
-                ]
+                                "flex": 2,
+                            },
+                        ],
+                    },
+                ],
             },
             "footer": {
                 "type": "box",
@@ -119,9 +121,9 @@ def สร้างFlexMessage(อาหาร):
                         "action": {
                             "type": "message",
                             "label": "สั่งเลย!",
-                            "text": f"ขอสั่ง{อาหาร['ชื่อ']}"
+                            "text": f"ขอสั่ง{อาหาร['ชื่อ']}",
                         },
-                        "height": "sm"
+                        "height": "sm",
                     },
                     {
                         "type": "button",
@@ -129,14 +131,14 @@ def สร้างFlexMessage(อาหาร):
                         "action": {
                             "type": "message",
                             "label": "เมนูอื่น",
-                            "text": "กินอะไรดี"
+                            "text": "กินอะไรดี",
                         },
                         "height": "sm",
-                        "margin": "sm"
-                    }
-                ]
-            }
-        }
+                        "margin": "sm",
+                    },
+                ],
+            },
+        },
     }
 
 
@@ -144,13 +146,15 @@ def สร้างFlexMessage(อาหาร):
 def ตอบกลับ(replyToken, ข้อความ):
     หัวข้อ = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {CHANNEL_ACCESS_TOKEN}"
+        "Authorization": f"Bearer {CHANNEL_ACCESS_TOKEN}",
     }
     ข้อมูล = {
         "replyToken": replyToken,
-        "messages": ข้อความ if isinstance(ข้อความ, list) else [ข้อความ]
+        "messages": ข้อความ if isinstance(ข้อความ, list) else [ข้อความ],
     }
-    ผล = requests.post("https://api.line.me/v2/bot/message/reply", headers=หัวข้อ, json=ข้อมูล)
+    ผล = requests.post(
+        "https://api.line.me/v2/bot/message/reply", headers=หัวข้อ, json=ข้อมูล
+    )
     print("STATUS:", ผล.status_code)
     print("RESPONSE:", ผล.text)
 
@@ -182,3 +186,4 @@ def webhook():
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
+
