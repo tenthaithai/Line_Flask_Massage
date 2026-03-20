@@ -3,11 +3,13 @@ import requests
 import random
 import os
 from groq import Groq  # เปลี่ยน Library เป็น groq
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
 # --- Configuration API Keys (Groq Cloud) ---
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "YOUR_GROQ_API_KEY_HERE")
+load_dotenv()
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 client = Groq(api_key=GROQ_API_KEY)
 
 # กำหนด System Instruction สำหรับ Groq
