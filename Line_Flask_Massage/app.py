@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__)
 
-# ตั้งค่า Token และ Secret ของ LINE
+# LINE Channel Settings
 CHANNEL_ACCESS_TOKEN = os.environ.get(
     "LINE_CHANNEL_ACCESS_TOKEN",
     "edF0a5LKdkP7jHEXvKXIpgohbfNjk8djOYkIYLxPef+jhnVOpZafC7xhds/M+iQIadpOYZbla8EscJ7FYxzQ6RwEe0yCbTQrO/A3qo08b1cG8pkTxcLjFoGI2aiiXBIO9cfj3RVHZumjKypjhlHYHgdB04t89/1O/w1cDnyilFU=",
@@ -14,54 +14,54 @@ CHANNEL_SECRET = os.environ.get(
     "LINE_CHANNEL_SECRET", "142b833b66b98f24e01e7d1ca0b470f3"
 )
 
-# รายการเมนูอาหาร
-รายการอาหาร = [
+# Food Menu List
+food_menu = [
     {
-        "ชื่อ": "ข้าวมันไก่",
-        "โปรโมชัน": "ข้าวมันไก่ต้มนุ่ม หอมข้าวมันหอม พร้อมน้ำจิ้มสูตรเด็ด",
-        "รูป": "https://static.thairath.co.th/media/dFQROr7oWzulq5Fa6rpOetuLxWtDW4pGVxTIT2bhWuo8KUmcxGVIisEysxd9YsSVQ0b.webp",
-        "ราคา": "55",
+        "name": "ข้าวมันไก่",
+        "promotion": "ข้าวมันไก่ต้มนุ่ม หอมข้าวมันหอม พร้อมน้ำจิ้มสูตรเด็ด",
+        "image": "https://static.thairath.co.th/media/dFQROr7oWzulq5Fa6rpOetuLxWtDW4pGVxTIT2bhWuo8KUmcxGVIisEysxd9YsSVQ0b.webp",
+        "price": "55",
     },
     {
-        "ชื่อ": "ผัดกะเพราหมูสับ",
-        "โปรโมชัน": "ผัดกะเพราหมูสับกรอบ เผ็ดแซ่บ ใส่ไข่ดาว",
-        "รูป": "https://cdn-ildplgb.nitrocdn.com/IsDIEVbKqjLKLwSjgUBetWWfJLAUdaLp/assets/images/optimized/rev-95ef742/www.thammculture.com/wp-content/uploads/2024/01/Untitled-612.jpg",
-        "ราคา": "60",
+        "name": "ผัดกะเพราหมูสับ",
+        "promotion": "ผัดกะเพราหมูสับกรอบ เผ็ดแซ่บ ใส่ไข่ดาว",
+        "image": "https://cdn-ildplgb.nitrocdn.com/IsDIEVbKqjLKLwSjgUBetWWfJLAUdaLp/assets/images/optimized/rev-95ef742/www.thammculture.com/wp-content/uploads/2024/01/Untitled-612.jpg",
+        "price": "60",
     },
     {
-        "ชื่อ": "ส้มตำไทย",
-        "โปรโมชัน": "ส้มตำไทยสูตรต้นตำรับ เปรี้ยวหวานเผ็ด ถูกปาก",
-        "รูป": "https://cdn.hellokhunmor.com/wp-content/uploads/2019/10/107.-Thai-papaya-salad.jpg?w=750&q=100",
-        "ราคา": "50",
+        "name": "ส้มตำไทย",
+        "promotion": "ส้มตำไทยสูตรต้นตำรับ เปรี้ยวหวานเผ็ด ถูกปาก",
+        "image": "https://cdn.hellokhunmor.com/wp-content/uploads/2019/10/107.-Thai-papaya-salad.jpg?w=750&q=100",
+        "price": "50",
     },
     {
-        "ชื่อ": "ต้มยำกุ้ง",
-        "โปรโมชัน": "ต้มยำกุ้งน้ำข้นรสเข้มข้น กุ้งสดตัวใหญ่ อร่อยมาก",
-        "รูป": "https://www.creativeecon.asia/wp-content/uploads/2024/12/unnamed-1-696x389.jpg",
-        "ราคา": "120",
+        "name": "ต้มยำกุ้ง",
+        "promotion": "ต้มยำกุ้งน้ำข้นรสเข้มข้น กุ้งสดตัวใหญ่ อร่อยมาก",
+        "image": "https://www.creativeecon.asia/wp-content/uploads/2024/12/unnamed-1-696x389.jpg",
+        "price": "120",
     },
     {
-        "ชื่อ": "ข้าวผัดปู",
-        "โปรโมชัน": "ข้าวผัดปูเนื้อปูแน่น หอมกลิ่นไข่ รสชาติกลมกล่อม",
-        "รูป": "https://cdn.prod.website-files.com/629732c7c0e1401011449adc/6350f5166cfda1f319196a94_CrabFriedRice%402x-p-1600.webp",
-        "ราคา": "100",
+        "name": "ข้าวผัดปู",
+        "promotion": "ข้าวผัดปูเนื้อปูแน่น หอมกลิ่นไข่ รสชาติกลมกล่อม",
+        "image": "https://cdn.prod.website-files.com/629732c7c0e1401011449adc/6350f5166cfda1f319196a94_CrabFriedRice%402x-p-1600.webp",
+        "price": "100",
     },
 ]
 
-# คีย์เวิร์ดที่รองรับ
-คีย์เวิร์ดอาหาร = ["แนะนำเมนูอาหาร", "กินอะไรดี", "หิวข้าว"]
+# Supported Keywords
+food_keywords = ["แนะนำเมนูอาหาร", "กินอะไรดี", "หิวข้าว"]
 
 
-# สร้าง Flex Message
-def สร้างFlexMessage(อาหาร):
+# Create Flex Message
+def create_flex_message(food_item):
     return {
         "type": "flex",
-        "altText": f"แนะนำเมนู: {อาหาร['ชื่อ']}",
+        "altText": f"แนะนำเมนู: {food_item['name']}",
         "contents": {
             "type": "bubble",
             "hero": {
                 "type": "image",
-                "url": อาหาร["รูป"],
+                "url": food_item["image"],
                 "size": "full",
                 "aspectRatio": "20:13",
                 "aspectMode": "cover",
@@ -73,14 +73,14 @@ def สร้างFlexMessage(อาหาร):
                 "contents": [
                     {
                         "type": "text",
-                        "text": อาหาร["ชื่อ"],
+                        "text": food_item["name"],
                         "size": "xl",
                         "weight": "bold",
                         "color": "#222222",
                     },
                     {
                         "type": "text",
-                        "text": อาหาร["โปรโมชัน"],
+                        "text": food_item["promotion"],
                         "size": "sm",
                         "color": "#666666",
                         "wrap": True,
@@ -100,7 +100,7 @@ def สร้างFlexMessage(อาหาร):
                             },
                             {
                                 "type": "text",
-                                "text": f"฿{อาหาร['ราคา']}",
+                                "text": f"฿{food_item['price']}",
                                 "size": "lg",
                                 "weight": "bold",
                                 "color": "#E53E3E",
@@ -121,7 +121,7 @@ def สร้างFlexMessage(อาหาร):
                         "action": {
                             "type": "message",
                             "label": "สั่งเลย!",
-                            "text": f"ขอสั่ง{อาหาร['ชื่อ']}",
+                            "text": f"ขอสั่ง{food_item['name']}",
                         },
                         "height": "sm",
                     },
@@ -142,44 +142,44 @@ def สร้างFlexMessage(อาหาร):
     }
 
 
-# ส่งข้อความกลับไปหาผู้ใช้
-def ตอบกลับ(replyToken, ข้อความ):
-    หัวข้อ = {
+# Send Reply Message to User
+def send_reply(reply_token, messages):
+    headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {CHANNEL_ACCESS_TOKEN}",
     }
-    ข้อมูล = {
-        "replyToken": replyToken,
-        "messages": ข้อความ if isinstance(ข้อความ, list) else [ข้อความ],
+    data = {
+        "replyToken": reply_token,
+        "messages": messages if isinstance(messages, list) else [messages],
     }
-    ผล = requests.post(
-        "https://api.line.me/v2/bot/message/reply", headers=หัวข้อ, json=ข้อมูล
+    response = requests.post(
+        "https://api.line.me/v2/bot/message/reply", headers=headers, json=data
     )
-    print("STATUS:", ผล.status_code)
-    print("RESPONSE:", ผล.text)
+    print("STATUS:", response.status_code)
+    print("RESPONSE:", response.text)
 
 
-# รับ Webhook จาก LINE
+# Receive Webhook from LINE
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    ข้อมูล = request.get_json()
-    print("📥 ได้รับ:", ข้อมูล)
+    payload = request.get_json()
+    print("📥 Received:", payload)
 
-    for เหตุการณ์ in ข้อมูล.get("events", []):
-        # รองรับเฉพาะข้อความประเภทข้อความ
-        if เหตุการณ์["type"] != "message" or เหตุการณ์["message"]["type"] != "text":
+    for event in payload.get("events", []):
+        # Support only text message type
+        if event["type"] != "message" or event["message"]["type"] != "text":
             continue
 
-        ข้อความที่รับ = เหตุการณ์["message"]["text"].strip()
-        replyToken = เหตุการณ์["replyToken"]
+        received_text = event["message"]["text"].strip()
+        reply_token = event["replyToken"]
 
-        if ข้อความที่รับ in คีย์เวิร์ดอาหาร:
-            # สุ่มเมนูแล้วตอบด้วย Flex Message
-            อาหารที่เลือก = random.choice(รายการอาหาร)
-            ตอบกลับ(replyToken, [สร้างFlexMessage(อาหารที่เลือก)])
+        if received_text in food_keywords:
+            # Randomize menu and reply with Flex Message
+            selected_food = random.choice(food_menu)
+            send_reply(reply_token, [create_flex_message(selected_food)])
         else:
-            # คีย์เวิร์ดอื่นตอบว่าไม่เข้าใจ
-            ตอบกลับ(replyToken, [{"type": "text", "text": "ฉันไม่เข้าใจ"}])
+            # Other keywords: Reply not understand
+            send_reply(reply_token, [{"type": "text", "text": "ฉันไม่เข้าใจ"}])
 
     return "OK", 200
 
