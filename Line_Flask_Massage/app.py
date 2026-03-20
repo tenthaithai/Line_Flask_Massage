@@ -38,31 +38,31 @@ food_menu = [
     {
         "name": "ข้าวมันไก่",
         "promotion": "ข้าวมันไก่ต้มนุ่ม หอมข้าวมันหอม พร้อมน้ำจิ้มสูตรเด็ด",
-        "image": "https://static.thairath.co.th/...",
+        "image": "https://static.thairath.co.th/media/dFQROr7oWzulq5Fa6rpOetuLxWtDW4pGVxTIT2bhWuo8KUmcxGVIisEysxd9YsSVQ0b.webp",
         "price": "55",
     },
     {
         "name": "ผัดกะเพราหมูสับ",
         "promotion": "ผัดกะเพราหมูสับกรอบ เผ็ดแซ่บ ใส่ไข่ดาว",
-        "image": "https://cdn-ildplgb.nitrocdn.com/...",
+        "image": "https://cdn-ildplgb.nitrocdn.com/IsDIEVbKqjLKLwSjgUBetWWfJLAUdaLp/assets/images/optimized/rev-95ef742/www.thammculture.com/wp-content/uploads/2024/01/Untitled-612.jpg",
         "price": "60",
     },
     {
         "name": "ส้มตำไทย",
         "promotion": "ส้มตำไทยสูตรต้นตำรับ เปรี้ยวหวานเผ็ด ถูกปาก",
-        "image": "https://cdn.hellokhunmor.com/...",
+        "image": "https://cdn.hellokhunmor.com/wp-content/uploads/2019/10/107.-Thai-papaya-salad.jpg?w=750&q=100",
         "price": "50",
     },
     {
         "name": "ต้มยำกุ้ง",
         "promotion": "ต้มยำกุ้งน้ำข้นรสเข้มข้น กุ้งสดตัวใหญ่ อร่อยมาก",
-        "image": "https://www.creativeecon.asia/...",
+        "image": "https://www.creativeecon.asia/wp-content/uploads/2024/12/unnamed-1-696x389.jpg",
         "price": "120",
     },
     {
         "name": "ข้าวผัดปู",
         "promotion": "ข้าวผัดปูเนื้อปูแน่น หอมกลิ่นไข่ รสชาติกลมกล่อม",
-        "image": "https://cdn.prod.website-files.com/...",
+        "image": "https://cdn.prod.website-files.com/629732c7c0e1401011449adc/6350f5166cfda1f319196a94_CrabFriedRice%402x-p-1600.webp",
         "price": "100",
     },
 ]
