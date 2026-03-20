@@ -49,7 +49,7 @@ food_menu = [
 ]
 
 # Supported Keywords
-food_keywords = ["แนะนำเมนูอาหาร", "กินอะไรดี", "หิวข้าว"]
+food_keywords = []
 
 
 # Create Flex Message
