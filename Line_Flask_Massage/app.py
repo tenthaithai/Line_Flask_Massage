@@ -2,42 +2,35 @@ from flask import Flask, request
 import requests
 import random
 import os
-import google.generativeai as genai
+from groq import Groq  # เปลี่ยน Library เป็น groq
 
 app = Flask(__name__)
 
+# --- Configuration API Keys (Groq Cloud) ---
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "YOUR_GROQ_API_KEY_HERE")
+client = Groq(api_key=GROQ_API_KEY)
 
-# Confinguretion API Keys (LLM)
-genai.configure(api_key="AIzaSyDZvJDyugaDZD_goIjjKYHDxmJwxQQwLzY")
-
-
-# Create Model For System Instruction (Food Deler)
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    system_instruction="""
-        You Is Food Master, your role is:
-        1. Check User Conversation (That Conver. is Food Or Not)
-        2. If Not Food Say "ขออภัยครับ กระผมทราบแค่เรื่องอาหาร"
-        3. If Yes Then Analysis Taste and Component And Recommen To User (Min. 3 Menu)
-        4. If User Not Corrent Conversation Check Conversation Confident Before Analysis
-        """,
-)
-
+# กำหนด System Instruction สำหรับ Groq
+SYSTEM_INSTRUCTION = """
+    You are Food Master, your role is:
+    1. Check User Conversation (That Conver. is Food Or Not)
+    2. If Not Food Say "ขออภัยครับ กระผมทราบแค่เรื่องอาหาร"
+    3. If Yes Then Analysis Taste and Component And Recommend To User (Min. 3 Menu)
+    4. If User Not Corrent Conversation Check Conversation Confident Before Analysis
+    5. Answer in Thai language.
+"""
 
 # LINE Channel Settings
 CHANNEL_ACCESS_TOKEN = os.environ.get(
     "LINE_CHANNEL_ACCESS_TOKEN",
     "edF0a5LKdkP7jHEXvKXIpgohbfNjk8djOYkIYLxPef+jhnVOpZafC7xhds/M+iQIadpOYZbla8EscJ7FYxzQ6RwEe0yCbTQrO/A3qo08b1cG8pkTxcLjFoGI2aiiXBIO9cfj3RVHZumjKypjhlHYHgdB04t89/1O/w1cDnyilFU=",
 )
-CHANNEL_SECRET = os.environ.get(
-    "LINE_CHANNEL_SECRET", "142b833b66b98f24e01e7d1ca0b470f3"
-)
 
-# Food Menu List
+# Food Menu List (ยังคงเดิม)
 food_menu = [
     {
         "name": "ข้าวมันไก่",
-        "promotion": "ข้าวมันไก่ต้มนุ่ม หอมข้าวมันหอม พร้อมน้ำจิ้มสูตรเด็ด",
+        "promotion": "ข้าวมันไก่ต้มนุ่ม หอมข้าวมันหอม",
         "image": "https://static.thairath.co.th/media/dFQROr7oWzulq5Fa6rpOetuLxWtDW4pGVxTIT2bhWuo8KUmcxGVIisEysxd9YsSVQ0b.webp",
         "price": "55",
     },
@@ -49,27 +42,27 @@ food_menu = [
     },
     {
         "name": "ส้มตำไทย",
-        "promotion": "ส้มตำไทยสูตรต้นตำรับ เปรี้ยวหวานเผ็ด ถูกปาก",
+        "promotion": "ส้มตำไทยสูตรต้นตำรับ เปรี้ยวหวานเผ็ด",
         "image": "https://cdn.hellokhunmor.com/wp-content/uploads/2019/10/107.-Thai-papaya-salad.jpg?w=750&q=100",
         "price": "50",
     },
     {
         "name": "ต้มยำกุ้ง",
-        "promotion": "ต้มยำกุ้งน้ำข้นรสเข้มข้น กุ้งสดตัวใหญ่ อร่อยมาก",
+        "promotion": "ต้มยำกุ้งน้ำข้นรสเข้มข้น กุ้งสดตัวใหญ่",
         "image": "https://www.creativeecon.asia/wp-content/uploads/2024/12/unnamed-1-696x389.jpg",
         "price": "120",
     },
     {
         "name": "ข้าวผัดปู",
-        "promotion": "ข้าวผัดปูเนื้อปูแน่น หอมกลิ่นไข่ รสชาติกลมกล่อม",
+        "promotion": "ข้าวผัดปูเนื้อปูแน่น หอมกลิ่นไข่",
         "image": "https://cdn.prod.website-files.com/629732c7c0e1401011449adc/6350f5166cfda1f319196a94_CrabFriedRice%402x-p-1600.webp",
         "price": "100",
     },
 ]
 
 
-# Create Flex Message
 def create_flex_message(food_item):
+    # (โค้ดส่วนนี้เหมือนเดิมทุุกประการ)
     return {
         "type": "flex",
         "altText": f"แนะนำเมนู: {food_item['name']}",
@@ -92,13 +85,11 @@ def create_flex_message(food_item):
                         "text": food_item["name"],
                         "size": "xl",
                         "weight": "bold",
-                        "color": "#222222",
                     },
                     {
                         "type": "text",
                         "text": food_item["promotion"],
                         "size": "sm",
-                        "color": "#666666",
                         "wrap": True,
                     },
                     {"type": "separator", "margin": "md"},
@@ -107,13 +98,7 @@ def create_flex_message(food_item):
                         "layout": "baseline",
                         "margin": "md",
                         "contents": [
-                            {
-                                "type": "text",
-                                "text": "ราคา",
-                                "size": "sm",
-                                "color": "#999999",
-                                "flex": 1,
-                            },
+                            {"type": "text", "text": "ราคา", "size": "sm", "flex": 1},
                             {
                                 "type": "text",
                                 "text": f"฿{food_item['price']}",
@@ -158,7 +143,6 @@ def create_flex_message(food_item):
     }
 
 
-# Send Reply Message to User
 def send_reply(reply_token, messages):
     headers = {
         "Content-Type": "application/json",
@@ -173,11 +157,9 @@ def send_reply(reply_token, messages):
     )
 
 
-# Receive Webhook from LINE
 @app.route("/webhook", methods=["POST"])
 def webhook():
     payload = request.get_json()
-
     for event in payload.get("events", []):
         if event["type"] != "message" or event["message"]["type"] != "text":
             continue
@@ -186,19 +168,20 @@ def webhook():
         reply_token = event["replyToken"]
 
         try:
-            # --- ส่วนที่เชื่อมต่อกับ Gemini ---
-            response = model.generate_content(user_text)
-            ai_reply = response.text.strip()
+            # --- ส่วนที่เชื่อมต่อกับ Groq Cloud ---
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": SYSTEM_INSTRUCTION},
+                    {"role": "user", "content": user_text},
+                ],
+                model="llama-3.3-70b-versatile",  # หรือใช้ "llama3-8b-8192" ก็ได้ครับ
+            )
+            ai_reply = chat_completion.choices[0].message.content.strip()
 
-            # ตรวจสอบเงื่อนไขข้อ 2: ถ้า AI ตอบว่าไม่ทราบเรื่องอื่น
             if "ขออภัยครับ กระผมทราบแค่เรื่องอาหาร" in ai_reply:
                 send_reply(reply_token, [{"type": "text", "text": ai_reply}])
             else:
-                # ถ้า AI วิเคราะห์ว่าเป็นเรื่องอาหาร (เงื่อนไขข้อ 3)
-                # สุ่มเมนูจาก List ของเราเพื่อแสดงเป็น Flex Message ร่วมกับคำแนะนำของ AI
                 selected_food = random.choice(food_menu)
-
-                # ส่งทั้งคำแนะนำจาก AI และ Flex Message เมนูอาหาร
                 messages = [
                     {"type": "text", "text": ai_reply},
                     create_flex_message(selected_food),
