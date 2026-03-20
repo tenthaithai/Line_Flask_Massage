@@ -2,8 +2,27 @@ from flask import Flask, request
 import requests
 import random
 import os
+# import google.generativeai as genai
 
 app = Flask(__name__)
+
+
+# Confinguretion API Keys (LLM)
+# genai.configure(api_key="AIzaSyDZvJDyugaDZD_goIjjKYHDxmJwxQQwLzY")
+
+
+# Create Model For System Instruction (Food Deler)
+# model = genai.GenerativeModel(
+#    model_name="gemini-1.5-flash",
+#    system_instruction="""
+#        You Is Food Master, your role is:
+#       1. Check User Conversation (That Conver. is Food Or Not)
+#       2. If Not Food Say "ขออภัยครับ กระผมทราบแค่เรื่องอาหาร"
+#       3. If Yes Then Analysis Taste and Component And Recommen To User (Min. 3 Menu)
+#       4. If User Not Corrent Conversation Check Conversation Confident Before Analysis
+#       """,
+# )
+
 
 # LINE Channel Settings
 CHANNEL_ACCESS_TOKEN = os.environ.get(
@@ -48,8 +67,7 @@ food_menu = [
     },
 ]
 
-# Supported Keywords
-food_keywords = []
+food_keywords = ["แนะนำเมน", "Finding"]
 
 
 # Create Flex Message
