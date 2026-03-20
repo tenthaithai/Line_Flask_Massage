@@ -2,26 +2,26 @@ from flask import Flask, request
 import requests
 import random
 import os
-# import google.generativeai as genai
+import google.generativeai as genai
 
 app = Flask(__name__)
 
 
 # Confinguretion API Keys (LLM)
-# genai.configure(api_key="AIzaSyDZvJDyugaDZD_goIjjKYHDxmJwxQQwLzY")
+genai.configure(api_key="AIzaSyDZvJDyugaDZD_goIjjKYHDxmJwxQQwLzY")
 
 
 # Create Model For System Instruction (Food Deler)
-# model = genai.GenerativeModel(
-#    model_name="gemini-1.5-flash",
-#    system_instruction="""
-#        You Is Food Master, your role is:
-#       1. Check User Conversation (That Conver. is Food Or Not)
-#       2. If Not Food Say "ขออภัยครับ กระผมทราบแค่เรื่องอาหาร"
-#       3. If Yes Then Analysis Taste and Component And Recommen To User (Min. 3 Menu)
-#       4. If User Not Corrent Conversation Check Conversation Confident Before Analysis
-#       """,
-# )
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash",
+    system_instruction="""
+        You Is Food Master, your role is:
+        1. Check User Conversation (That Conver. is Food Or Not)
+        2. If Not Food Say "ขออภัยครับ กระผมทราบแค่เรื่องอาหาร"
+        3. If Yes Then Analysis Taste and Component And Recommen To User (Min. 3 Menu)
+        4. If User Not Corrent Conversation Check Conversation Confident Before Analysis
+        """,
+)
 
 
 # LINE Channel Settings
@@ -38,36 +38,34 @@ food_menu = [
     {
         "name": "ข้าวมันไก่",
         "promotion": "ข้าวมันไก่ต้มนุ่ม หอมข้าวมันหอม พร้อมน้ำจิ้มสูตรเด็ด",
-        "image": "https://static.thairath.co.th/media/dFQROr7oWzulq5Fa6rpOetuLxWtDW4pGVxTIT2bhWuo8KUmcxGVIisEysxd9YsSVQ0b.webp",
+        "image": "https://static.thairath.co.th/...",
         "price": "55",
     },
     {
         "name": "ผัดกะเพราหมูสับ",
         "promotion": "ผัดกะเพราหมูสับกรอบ เผ็ดแซ่บ ใส่ไข่ดาว",
-        "image": "https://cdn-ildplgb.nitrocdn.com/IsDIEVbKqjLKLwSjgUBetWWfJLAUdaLp/assets/images/optimized/rev-95ef742/www.thammculture.com/wp-content/uploads/2024/01/Untitled-612.jpg",
+        "image": "https://cdn-ildplgb.nitrocdn.com/...",
         "price": "60",
     },
     {
         "name": "ส้มตำไทย",
         "promotion": "ส้มตำไทยสูตรต้นตำรับ เปรี้ยวหวานเผ็ด ถูกปาก",
-        "image": "https://cdn.hellokhunmor.com/wp-content/uploads/2019/10/107.-Thai-papaya-salad.jpg?w=750&q=100",
+        "image": "https://cdn.hellokhunmor.com/...",
         "price": "50",
     },
     {
         "name": "ต้มยำกุ้ง",
         "promotion": "ต้มยำกุ้งน้ำข้นรสเข้มข้น กุ้งสดตัวใหญ่ อร่อยมาก",
-        "image": "https://www.creativeecon.asia/wp-content/uploads/2024/12/unnamed-1-696x389.jpg",
+        "image": "https://www.creativeecon.asia/...",
         "price": "120",
     },
     {
         "name": "ข้าวผัดปู",
         "promotion": "ข้าวผัดปูเนื้อปูแน่น หอมกลิ่นไข่ รสชาติกลมกล่อม",
-        "image": "https://cdn.prod.website-files.com/629732c7c0e1401011449adc/6350f5166cfda1f319196a94_CrabFriedRice%402x-p-1600.webp",
+        "image": "https://cdn.prod.website-files.com/...",
         "price": "100",
     },
 ]
-
-food_keywords = ["แนะนำเมน", "Finding"]
 
 
 # Create Flex Message
@@ -170,37 +168,51 @@ def send_reply(reply_token, messages):
         "replyToken": reply_token,
         "messages": messages if isinstance(messages, list) else [messages],
     }
-    response = requests.post(
+    requests.post(
         "https://api.line.me/v2/bot/message/reply", headers=headers, json=data
     )
-    print("STATUS:", response.status_code)
-    print("RESPONSE:", response.text)
 
 
 # Receive Webhook from LINE
 @app.route("/webhook", methods=["POST"])
 def webhook():
     payload = request.get_json()
-    print("📥 Received:", payload)
 
     for event in payload.get("events", []):
-        # Support only text message type
         if event["type"] != "message" or event["message"]["type"] != "text":
             continue
 
-        received_text = event["message"]["text"].strip()
+        user_text = event["message"]["text"].strip()
         reply_token = event["replyToken"]
 
-        if received_text in food_keywords:
-            # Randomize menu and reply with Flex Message
-            selected_food = random.choice(food_menu)
-            send_reply(reply_token, [create_flex_message(selected_food)])
-        else:
-            # Other keywords: Reply not understand
-            send_reply(reply_token, [{"type": "text", "text": "ฉันไม่เข้าใจ"}])
+        try:
+            # --- ส่วนที่เชื่อมต่อกับ Gemini ---
+            response = model.generate_content(user_text)
+            ai_reply = response.text.strip()
+
+            # ตรวจสอบเงื่อนไขข้อ 2: ถ้า AI ตอบว่าไม่ทราบเรื่องอื่น
+            if "ขออภัยครับ กระผมทราบแค่เรื่องอาหาร" in ai_reply:
+                send_reply(reply_token, [{"type": "text", "text": ai_reply}])
+            else:
+                # ถ้า AI วิเคราะห์ว่าเป็นเรื่องอาหาร (เงื่อนไขข้อ 3)
+                # สุ่มเมนูจาก List ของเราเพื่อแสดงเป็น Flex Message ร่วมกับคำแนะนำของ AI
+                selected_food = random.choice(food_menu)
+
+                # ส่งทั้งคำแนะนำจาก AI และ Flex Message เมนูอาหาร
+                messages = [
+                    {"type": "text", "text": ai_reply},
+                    create_flex_message(selected_food),
+                ]
+                send_reply(reply_token, messages)
+
+        except Exception as e:
+            print(f"Error: {e}")
+            send_reply(
+                reply_token, [{"type": "text", "text": "ขออภัยครับ ระบบประมวลผลขัดข้อง"}]
+            )
 
     return "OK", 200
 
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(port=5000)
