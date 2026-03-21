@@ -2,3 +2,4 @@ flask
 requests
 gunicorn
 groq
+python-dotenv
